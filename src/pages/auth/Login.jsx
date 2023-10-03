@@ -1,8 +1,12 @@
 import { FaUser } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { schema } from "../../schema/yupSchema";
+import { schema } from "../../schema/yup.login.schema";
+import toast from "react-hot-toast";
+
+import { useEffect } from "react";
+import { useLoginMutation } from "../../redux/api/auth/authApi";
 
 const Login = () => {
   const {
@@ -11,11 +15,33 @@ const Login = () => {
     // watch,
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
+  const [
+    setLoginBody,
+    { data: loginResponse, isSuccess, isError, error: loginResError },
+  ] = useLoginMutation();
 
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = (data) => {
+    setLoginBody(data);
+  };
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    userId && navigate("/");
+
+    if (isSuccess && loginResponse?.success) {
+      toast.success("Login success");
+      localStorage.setItem("userId", loginResponse.userId);
+
+      navigate("/");
+    }
+    if (isError) {
+      toast.error(loginResError?.data.message || "Ops! Server Error");
+    }
+  }, [isSuccess, isError, loginResponse]);
 
   return (
-    <div className="card relative w-full max-w-sm shadow-2xl bg-base-100/30">
+    <div className="card relative w-full my-auto  max-w-sm shadow-2xl bg-base-100/30">
       <div className="flex items-center justify-center flex-col absolute -translate-x-1/2 left-1/2 -top-8 ">
         <FaUser className="text-6xl text-primary" />
 
@@ -32,7 +58,7 @@ const Login = () => {
             type="email"
             placeholder="Email"
             className="input input-bordered"
-            {...register("email", { required: true })}
+            {...register("email")}
           />
 
           {errors.email && (
@@ -47,7 +73,7 @@ const Login = () => {
             type="password"
             placeholder="Password"
             className="input input-bordered"
-            {...register("password", { required: true })}
+            {...register("password")}
           />
           {errors.password && (
             <small className="text-error mt-1">
@@ -61,7 +87,7 @@ const Login = () => {
               to="/register"
               className="label-text-alt link link-hover link-success"
             >
-              Register here!{" "}
+              Register here!
             </Link>
           </label>
         </div>
