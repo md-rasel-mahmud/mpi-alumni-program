@@ -19,4 +19,8 @@ export const schema = yup.object({
     .max(11),
   location: yup.string().required("Please Enter Location"),
   department: yup.string().required("Please Enter Department"),
+  // jobStatus: yup.object().shape({
+  //   companyName: yup.string().required("Please Enter Company Name"),
+  //   designation: yup.string().required("Please Enter designation"),
+  // }),
 });

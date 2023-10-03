@@ -4,15 +4,18 @@ import { FaUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { schema } from "../../schema/yup.login.schema";
 import { useRegisterMutation } from "../../redux/api/auth/authApi";
 import { useUploadImageMutation } from "../../redux/api/utils/utilApi";
 import toast from "react-hot-toast";
 import { useEffect } from "react";
+import { schema } from "../../schema/yup.register.schema copy";
+import JobStatus from "../../components/register/JobStatus";
 
 const Register = () => {
   const [img, setImg] = useState("");
   const [previewImg, setPreviewImg] = useState("");
+  const [jobStatus, setJobStatus] = useState(false);
+  const [studentsStatus, setStudentsStatus] = useState("alumniStudent");
   const [setRegisterBody, { data: registerRes, error: registerResError }] =
     useRegisterMutation();
   const [setUploadImage] = useUploadImageMutation();
@@ -59,6 +62,7 @@ const Register = () => {
         toast.error("Something went wrong");
       }
     }
+    console.log(data);
   };
 
   // showing toast
@@ -214,7 +218,9 @@ const Register = () => {
             </label>
             <select
               className="select select-bordered"
-              {...register("jobStatus")}
+              onChange={({ target: { value } }) =>
+                setJobStatus(JSON.parse(value))
+              }
             >
               <option value={false}>No</option>
               <option value={true}>Yes</option>
@@ -225,8 +231,56 @@ const Register = () => {
               </small>
             )}
           </div>
+          <div className="form-control flex-row gap-2">
+            <label className="label cursor-pointer">
+              <span className="label-text ">Current Student</span>
+              <input
+                type="radio"
+                name="studentStatus"
+                className="radio ml-2"
+                value="currentStudent"
+                {...register("studentStatus.status")}
+                onChange={({ target: { value } }) => setStudentsStatus(value)}
+              />
+            </label>
+            <label className="label cursor-pointer">
+              <span className="label-text">Alumni Student</span>
+              <input
+                type="radio"
+                name="studentStatus"
+                className="radio ml-2"
+                value="alumniStudent"
+                {...register("studentStatus.status")}
+                onChange={({ target: { value } }) => setStudentsStatus(value)}
+                defaultChecked={true}
+              />
+            </label>
+          </div>
+          <div className="from-control ">
+            {studentsStatus === "alumniStudent" ? (
+              <input
+                type="number"
+                placeholder="Passing Year"
+                className="input input-bordered w-full"
+                {...register("studentStatus.passingYear")}
+              />
+            ) : (
+              <input
+                type="number"
+                placeholder="Session"
+                className="input input-bordered w-full"
+                {...register("studentStatus.session")}
+              />
+            )}
+          </div>
         </div>
-
+        {jobStatus && (
+          <JobStatus
+            register={register}
+            errors={errors}
+            jobStatus={jobStatus}
+          />
+        )}
         <label className="label mt-4">
           Already registered?
           <Link

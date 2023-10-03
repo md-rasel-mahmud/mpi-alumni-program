@@ -15,7 +15,7 @@ const AuthNav = () => {
     }
   };
   return (
-    <div className="p-3 w-full  flex justify-between items-center sticky top-0 z-50 ">
+    <div className="p-3 w-full backdrop-blur-md flex justify-between items-center sticky top-0 z-50 ">
       <Link
         to="/"
         className=" border p-2 rounded-full backdrop-blur-md border-gray-600 hover:bg-black/10 
