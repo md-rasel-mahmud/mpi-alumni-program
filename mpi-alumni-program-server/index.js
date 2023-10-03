@@ -102,7 +102,7 @@ async function run() {
     });
 
     // =============== users routes ===============
-    // get user
+    // get all users
     app.get("/users", async (req, res) => {
       const users = await mpiAlumniCollection.find().toArray();
       res.send(users);
